@@ -1,0 +1,33 @@
+- name: modify netapp quota
+  hosts: localhost
+  become: no
+  gather_facts: no
+
+  vars_prompt:
+    - name: "netapp_username"
+      prompt: "Username"
+      private: no
+    - name: "netapp_password"
+      prompt: "Password"
+      private: yes
+    - name: "quota_size"
+      prompt: "Quota size:"
+      private: no
+
+  tasks:
+    - name: modify existing quota
+      na_ontap_quotas:
+        state: present
+        vserver: pconnect3b
+        volume: test_volume
+        quota_target: /vol/test_volume/qtree1
+        type: tree
+        disk_limit: 200g
+        threshold: 190g
+        set_quota_status: yes
+        hostname: "1.1.1.1"
+        username: "{{ netapp_username }}"
+        password: "{{ netapp_password }}"
+      tags:
+        - netapp
+        - quota
